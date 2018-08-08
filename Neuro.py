@@ -10,21 +10,19 @@ class Neuro(object):
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
-    def predict(self, inputs):
-        inputs_1 = np.dot(self.weights_0_1, inputs)
-        outputs_1 = self.sigmoid_mapper(inputs_1)
+    def layer(self, weights, input_data):
+        inputs = np.dot(weights, input_data)
+        return self.sigmoid_mapper(inputs)
 
-        inputs_2 = np.dot(self.weights_1_2, outputs_1)
-        outputs_2 = self.sigmoid_mapper(inputs_2)
+    def predict(self, inputs):
+        outputs_1 = self.layer(self.weights_0_1, inputs)
+        outputs_2 = self.layer(self.weights_1_2, outputs_1)
 
         return outputs_2
 
     def train(self, inputs, expected_value):
-        inputs_1 = np.dot(self.weights_0_1, inputs)
-        outputs_1 = self.sigmoid_mapper(inputs_1)
-
-        inputs_2 = np.dot(self.weights_1_2, outputs_1)
-        outputs_2 = self.sigmoid_mapper(inputs_2)
+        outputs_1 = self.layer(self.weights_0_1, inputs)
+        outputs_2 = self.layer(self.weights_1_2, outputs_1)
 
         actual_value = outputs_2[0]
 
