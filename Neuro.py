@@ -20,6 +20,12 @@ class Neuro(object):
 
         return outputs_2
 
+    def gradient_layer(self, value):
+        return value * (1 - value)
+
+    def delta(self, error_layer, gradient_layer):
+        return error_layer * gradient_layer
+
     def train(self, inputs, expected_value):
         outputs_1 = self.layer(self.weights_0_1, inputs)
         outputs_2 = self.layer(self.weights_1_2, outputs_1)
@@ -27,13 +33,11 @@ class Neuro(object):
         actual_value = outputs_2[0]
 
         error_layer_2 = np.array([actual_value - expected_value])
-        gradient_layer_2 = actual_value * (1 - actual_value)
-        weights_delta_layer_2 = error_layer_2 * gradient_layer_2
+        weights_delta_layer_2 = self.delta(error_layer_2, self.gradient_layer(actual_value))
         self.weights_1_2 -= (np.dot(weights_delta_layer_2, outputs_1.reshape(1, len(outputs_1)))) * self.learning_rate
 
         error_layer_1 = weights_delta_layer_2 * self.weights_1_2
-        gradient_layer_1 = outputs_1 * (1 - outputs_1)
-        weights_delta_layer_1 = error_layer_1 * gradient_layer_1
+        weights_delta_layer_1 = self.delta(error_layer_1, self.gradient_layer(outputs_1))
         self.weights_0_1 -= np.dot(inputs.reshape(len(inputs), 1), weights_delta_layer_1).T * self.learning_rate
 
         return actual_value
